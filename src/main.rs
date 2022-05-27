@@ -101,12 +101,12 @@ async fn server_upgraded_io(mut upgraded: Upgraded) -> Result<()> {
         ptr = ptr.offset( (mask_offset+4) as isize);
         std::mem::forget(v);
         let p64 = ptr as *mut u64;
-        Vec::from_raw_parts(p64, chunks, chunks) // unmask double world chunks 
+        Vec::from_raw_parts(p64, chunks, chunks) 
     };
 
     let mut i = 0usize;
     for i in  0..chunks {
-        vec64[i] = vec64[i] ^ mask; // unmasking double world chunks, obviously faster
+        vec64[i] = vec64[i] ^ mask; // unmasking double world chunks obviously faster
     }
     let remainder = payload_length % 8;
     if remainder != 0 {
