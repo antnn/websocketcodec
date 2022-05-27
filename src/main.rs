@@ -93,7 +93,7 @@ async fn server_upgraded_io(mut upgraded: Upgraded) -> Result<()> {
         let mut mask_bytes = [0u8; 4];
         mask_bytes.copy_from_slice(mask_slice);
         mask = u32::from_le_bytes(mask_bytes) as u64;
-        mask = (mask << 32) + mask;
+        mask = (mask << 32) + mask; //to speedup things "convert" to double word
     };
     let chunks = (payload_length as f64 / 8.0).ceil() as usize;
     let mut vec64 = unsafe {
@@ -101,12 +101,12 @@ async fn server_upgraded_io(mut upgraded: Upgraded) -> Result<()> {
         ptr = ptr.offset( (mask_offset+4) as isize);
         std::mem::forget(v);
         let p64 = ptr as *mut u64;
-        Vec::from_raw_parts(p64, chunks, chunks)
+        Vec::from_raw_parts(p64, chunks, chunks) // unmask double world chunks 
     };
 
     let mut i = 0usize;
     for i in  0..chunks {
-        vec64[i] = vec64[i] ^ mask;
+        vec64[i] = vec64[i] ^ mask; // unmasking double world chunks, obviously faster
     }
     let remainder = payload_length % 8;
     if remainder != 0 {
