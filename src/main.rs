@@ -105,8 +105,10 @@ async fn server_upgraded_io(mut upgraded: Upgraded) -> Result<()> {
     };
 
     let mut i = 0usize;
+    // An idea from https://chromium.googlesource.com/chromium/src/net/+/refs/heads/main/websockets/websocket_frame.cc#191
+    // unmasking double world chunks obviously faster
     for i in  0..chunks {
-        vec64[i] = vec64[i] ^ mask; // unmasking double world chunks obviously faster
+        vec64[i] = vec64[i] ^ mask; 
     }
     let remainder = payload_length % 8;
     if remainder != 0 {
